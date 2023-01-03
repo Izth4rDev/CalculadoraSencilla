@@ -13,12 +13,14 @@ const borrar = document.querySelector('#opAC');
 const igual = document.querySelector('#igual');
 const suma = document.querySelector('#suma');
 const restar = document.querySelector('#opRest');
+const mult = document.querySelector('#opMult');
 const formulario = document.querySelector('#formulario');
 const pantalla = document.querySelector('#pantalla');
 let numbers = [];
 let resultado = 0;
 let numConvert = 0;
 let operatorant = '';
+let temporal = 0; 
 
 eventListener();
 
@@ -124,6 +126,13 @@ function eventListener (){
 
     });
 
+    mult.addEventListener('click', () =>{
+
+        const calculo = new calculadora(numConvert, resultado);
+        operar(calculo, 'x');
+
+    });
+
 }
 
 class ui {
@@ -206,6 +215,47 @@ class calculadora {
         }
     }
 
+    multiplicar(operator){
+
+        if(operator === ''){
+
+            operator = 'x';
+
+        }
+
+        if(operator === 'x'){
+
+            if (temporal === 0){ // if para la primera multiplicacion para que esta no sea 0 en la primer uso del boton X
+
+                temporal = temporal + 1;
+                numbers= [];
+                resultado= this.numConvert;
+                limpiarPantalla();
+                UI.agregarPantalla(resultado);
+
+            }else{
+                console.log(`num1 ${resultado} * num2 ${this.numConvert}`);
+                resultado = resultado * this.numConvert;
+                console.log(resultado);
+                numbers= [];
+                limpiarPantalla();
+                UI.agregarPantalla(resultado);
+                temporal=temporal+1;
+
+            }
+
+        }else{
+
+
+            this.igual(operator);
+
+        }
+
+
+        
+
+    }
+
     igual(operator){
 
         console.log('operador dentro de funcion igual'+ operator);
@@ -218,6 +268,8 @@ class calculadora {
             case '-': this.restar(operator);
             break;
 
+            case 'x' : this.multiplicar(operator);
+            break;
         }
     }
 }
@@ -266,6 +318,10 @@ function operar(objetoCalc, operator){
 
         case '=':objetoCalc.igual(operatorant);
                 operatorant = operator;
+        break;
+
+        case 'x':objetoCalc.multiplicar(operatorant);
+                 operatorant = operator;
         break;
 
         default: alert('Error');
