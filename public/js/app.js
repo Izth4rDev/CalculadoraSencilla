@@ -14,13 +14,15 @@ const igual = document.querySelector('#igual');
 const suma = document.querySelector('#suma');
 const restar = document.querySelector('#opRest');
 const mult = document.querySelector('#opMult');
+const divide = document.querySelector('#opDiv')
 const formulario = document.querySelector('#formulario');
 const pantalla = document.querySelector('#pantalla');
 let numbers = [];
 let resultado = 0;
 let numConvert = 0;
 let operatorant = '';
-let temporal = 0; 
+let temporalMult = 0;
+let temporalDiv = 0; 
 
 eventListener();
 
@@ -99,7 +101,10 @@ function eventListener (){
 
     borrar.addEventListener('click', () =>{
 
+        //hay que limpiar todos los valores de control
         resultado = 0;
+        temporalDiv = 0;
+        temporalMult = 0;
         limpiarPantalla();
 
     });
@@ -130,6 +135,13 @@ function eventListener (){
 
         const calculo = new calculadora(numConvert, resultado);
         operar(calculo, 'x');
+
+    });
+
+    divide.addEventListener('click', () =>{
+
+        const calculo = new calculadora(numConvert, resultado);
+        operar(calculo, '/');
 
     });
 
@@ -217,42 +229,92 @@ class calculadora {
 
     multiplicar(operator){
 
+        console.log('operador al entrar al metodo' + operator)
+
         if(operator === ''){
 
             operator = 'x';
-
+            console.log('1');
         }
+
+
 
         if(operator === 'x'){
 
-            if (temporal === 0){ // if para la primera multiplicacion para que esta no sea 0 en la primer uso del boton X
+            console.log('2');
+            console.log(temporalMult);
 
-                temporal = temporal + 1;
+            if (temporalMult === 0 && resultado === 0){ // if para la primera multiplicacion para que esta no sea 0 en la primer uso del boton X
+
+                temporalMult = temporalMult + 1;
                 numbers= [];
                 resultado= this.numConvert;
                 limpiarPantalla();
                 UI.agregarPantalla(resultado);
+                console.log('entrada 3');
 
             }else{
+
                 console.log(`num1 ${resultado} * num2 ${this.numConvert}`);
                 resultado = resultado * this.numConvert;
                 console.log(resultado);
                 numbers= [];
                 limpiarPantalla();
                 UI.agregarPantalla(resultado);
-                temporal=temporal+1;
+                temporalMult=temporalMult+1;
+
+                console.log('entrada 4');
+            }
+
+        }else{
+
+            this.igual(operator);
+            console.log('entrada 5');
+        }
+
+    }
+
+    dividir(operator){
+
+
+        console.log('operador al entrar al metodo' + operator)
+
+        if(operator=== ''){
+
+            operator = '/';
+
+        }
+
+        if(operator === '/'){
+
+            console.log('adentro del if');
+
+
+            if(temporalDiv === 0 && resultado === 0){
+
+                temporalDiv = temporalDiv +1;
+                numbers= [];
+                resultado = this.numConvert;
+                limpiarPantalla();
+                UI.agregarPantalla(resultado);
+
+            }else{
+
+                console.log('dividiendo desde el objeto');
+                console.log(`num1 ${resultado} = ${resultado} / ${this.numConvert}`);
+                resultado = resultado/this.numConvert;
+                limpiarPantalla();
+                numbers = [];
+                UI.agregarPantalla(resultado);
+                temporalDiv = temporalDiv +1;
 
             }
 
         }else{
 
-
             this.igual(operator);
 
         }
-
-
-        
 
     }
 
@@ -269,6 +331,9 @@ class calculadora {
             break;
 
             case 'x' : this.multiplicar(operator);
+            break;
+
+            case '/': this.dividir(operator);
             break;
         }
     }
@@ -322,6 +387,10 @@ function operar(objetoCalc, operator){
 
         case 'x':objetoCalc.multiplicar(operatorant);
                  operatorant = operator;
+        break;
+
+        case '/':objetoCalc.dividir(operatorant);
+                operatorant = operator;
         break;
 
         default: alert('Error');
